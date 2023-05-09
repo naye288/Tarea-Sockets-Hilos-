@@ -6,11 +6,15 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 
 public class BotonCliente implements ActionListener{
     JFrame frame;
     JButton button;
     JPanel panel;
+    Socket client;
 
     boolean activo = false;
 
@@ -21,7 +25,7 @@ public class BotonCliente implements ActionListener{
 
         button = new JButton("Enceder");
         button.addActionListener(this);
-        button.setPreferredSize(new Dimension(100, 100));
+        button.setPreferredSize(new Dimension(200, 200));
         button.setActionCommand("encender");
         panel.add(button);
 
@@ -34,8 +38,27 @@ public class BotonCliente implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
+        if(e.getActionCommand().equals("encender")){
+            button.setText("apagar");
+            button.setActionCommand("apagar");
+            activo = true;
+        }
+        else{
+            button.setText("encender");
+            button.setActionCommand("encender");
+            activo = false;
+        }
+        try{
+            client = new Socket("172.18.168.33", 1234);
+            DataOutputStream enviStream = new DataOutputStream(client.getOutputStream());
+            enviStream.writeBoolean(activo);
+            System.out.println("del cliente "+activo);
+            enviStream.close();
+            client.close();
+
+        }catch(IOException A){
+            A.printStackTrace();
+        }
     }
 
 }
