@@ -61,6 +61,7 @@ public class Ventana implements Runnable{
             while(true){
                 System.out.println("Conectando cliente....");
                 client = serverSocket.accept();
+                System.out.println("Cliente conectado: "+ client.getInetAddress().getHostName());
                 DataInputStream datoStream = new DataInputStream(client.getInputStream());
                 activo  = datoStream.readBoolean();
                 System.out.println("En el servidor "+ activo);
