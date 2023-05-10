@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -49,10 +50,12 @@ public class BotonCliente implements ActionListener{
             activo = false;
         }
         try{
-            client = new Socket("172.18.168.33", 1234);
+            client = new Socket("localhost", 9999);
             DataOutputStream enviStream = new DataOutputStream(client.getOutputStream());
             enviStream.writeBoolean(activo);
-            System.out.println("del cliente "+activo);
+            DataInputStream datoStream = new DataInputStream(client.getInputStream());
+            activo  = datoStream.readBoolean();
+            System.out.println("El cliente recibio del servidor "+ activo);
             enviStream.close();
             client.close();
 

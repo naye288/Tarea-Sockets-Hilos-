@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -39,7 +40,7 @@ public class Ventana implements Runnable{
     private void blink(){
         while(true){
             //OJO, se necesita esta pausa
-            System.out.println(activo);
+            //System.out.println(activo);
             if (activo){
                 try {
                     blinker.setBackground(Color.YELLOW);
@@ -53,19 +54,28 @@ public class Ventana implements Runnable{
         }
     }
 
+    private void hiloSecundario(){
+        new Thread(new Runnable() {
+            @Override
+            public void run(){
+                blink();
+            }
+        }).start();
+    }
     @Override
     public void run() {
         try{
-            serverSocket = new ServerSocket(1234);
+            serverSocket = new ServerSocket(9999);
             System.out.println("Servidor en ejecucion....");
             while(true){
-                System.out.println("Conectando cliente....");
                 client = serverSocket.accept();
-                System.out.println("Cliente conectado: "+ client.getInetAddress().getHostName());
+                System.out.println("\nCliente conectado: "+ client.getInetAddress().getHostName());
                 DataInputStream datoStream = new DataInputStream(client.getInputStream());
                 activo  = datoStream.readBoolean();
-                System.out.println("En el servidor "+ activo);
-                blink();
+                System.out.println("El servidor recibio del cliente "+ activo);
+                hiloSecundario();
+                DataOutputStream enviStream = new DataOutputStream(client.getOutputStream());
+                enviStream.writeBoolean(activo);
             }
         }catch(IOException e){
             e.printStackTrace();
